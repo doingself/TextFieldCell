@@ -1,0 +1,83 @@
+//
+//  TxtField1ViewController.swift
+//  TextFieldCell
+//
+//  Created by zjkj on 2017/6/2.
+//  Copyright © 2017年 zhijiankeji. All rights reserved.
+//
+
+import UIKit
+
+class TxtField1ViewController: UIViewController {
+    
+    fileprivate var tabView: UITableView!
+    fileprivate let cellIdentifier = "cellIdentifier"
+    fileprivate var txtArr = [UITextField]()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Do any additional setup after loading the view, typically from a nib.
+        
+        self.navigationItem.title = "self.field = cell.field"
+        self.view.backgroundColor = UIColor.white
+        
+        for i in 0 ... 10 {
+            txtArr.append(UITextField())
+        }
+        
+        let tvc = UITableViewController(style: UITableViewStyle.grouped)
+        self.addChildViewController(tvc)
+        tvc.view.frame = self.view.frame
+        tabView = tvc.tableView
+        
+        tabView.delegate = self
+        tabView.dataSource = self
+        tabView.keyboardDismissMode = UIScrollViewKeyboardDismissMode.onDrag
+        
+        tabView.register(UINib(nibName: "TextFieldTableViewCell", bundle: nil), forCellReuseIdentifier: cellIdentifier)
+        
+        // 单元格的预估行高
+        tabView.estimatedRowHeight = 44.0
+        // 自动计算行高
+        tabView.rowHeight = UITableViewAutomaticDimension
+        self.view.addSubview(tabView)
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    
+}
+extension TxtField1ViewController: UITableViewDataSource{
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 10
+    }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as! TextFieldTableViewCell
+        
+        cell.titleLab.text = String(format: "%d-%d", indexPath.section,indexPath.row)
+        let index = indexPath.section * 10 + indexPath.row
+        
+        cell.txtField.text = txtArr[index].text
+        txtArr[index] = cell.txtField
+        
+        return cell
+    }
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+}
+extension TxtField1ViewController: UITableViewDelegate{
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        // 输出 textfield.text
+        for i in 0 ..< txtArr.count {
+            let txt = txtArr[i]
+            let str = " \(i)\t=\t\(txt.text ?? "" )"
+            print(str)
+        }
+    }
+}
